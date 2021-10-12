@@ -2,15 +2,20 @@
 ML, DL paper reading notes
 
 
-## Quant
+## optimization / training diagram
 
-### AAAI_2021, 8 papers
+## DL Framework, distributed DL, and CS-related
 
+## NLP / seq models
 
 ## RL
 
+## GNN / spatio-temperal
 
-## GNN
+
+## tree
 
 
-## ML/DL Awesome papers
+## quant
+
+AAAI_2021, 8 papers
