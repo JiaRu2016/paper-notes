@@ -41,6 +41,13 @@ DouZero *DouZero: Mastering DouDizhu with Self-Play Deep Reinforcement Learning*
     + why not policy gradient? inifinte action space. While action as feature can generalize eg. `3KKK` to `3JJJ`
 
 
+滴滴打车派单算法 *Large-Scale Order Dispatch in On-Demand Ride-Hailing Platforms: A Learning and Planning Approach*
+
+- define one day as one episode, 
+- state defined as `s = (grid, time)`,  offline learn `V(s)`, thus we know `Q(s,a) = r + V(s')`
+- oneline dispatch: solve `a = argmax_a Q(s, a)` with KM algriom. 一种确定性算法，输入二分图及其权重，输出一个使权值和最大的匹配方案，这里权重就是offline估计出来的`Q(s,a)`
+
+
 ## GNN / spatio-temperal
 
 
