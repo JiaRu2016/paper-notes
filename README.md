@@ -4,9 +4,30 @@ ML, DL paper reading notes
 
 ## optimization / training diagram
 
-## DL Framework, distributed DL, and CS-related
+
+## distributed DL
+
+hogwild! *Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent*
+
+Parameter Server. *Scaling Distributed Machine Learning with the Parameter Server*, *Communication Efﬁcient Distributed Machine Learning with the Parameter Server*
+
+
+## DL Framework and CS-related
+
+BP impl. CSE599W
+
+*PyTorch Distributed- Experiences on Accelerating Data Parallel Training* 看视频更好，overlapping compute and communication 原理和 pytorch 实现细节
+
+GPipe *Efficient Training of Giant Neural Networks using Pipeline Parallelism* 以及pytorch实现 *torchgpipe: On-the-ﬂy Pipeline Parallelism for Training Giant Models*
+
+*ZeRO: Memory Optimizations Toward Training Trillion Parameter Models*
+
+混合精度训练 *mixed precision training*
+
+为什么砍了计算量推理性能还是不变？可能跟访存有关 *Roofline: An Insightful Visual Performance Model for Floating-Point Programs and Multicore Architectures*
 
 ## NLP / seq models
+
 
 ## RL
 
