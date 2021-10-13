@@ -12,7 +12,16 @@ ML, DL paper reading notes
 
 ### awesome
 
+DQN. *Playing Atari with Deep Reinforcement Learning*    
+DQN + target Q net. *Human-level control through deep reinforcement learning*      
+Policy Gradient. *Policy Gradient Methods for RL with Function Approximation* 主要是推导得到了 Policy gradient Themorm    
+A3C. *Asynchronous Methods for Deep Reinforcement Learning*
+Duel Q network. *Dueling Network Architectures for Deep Reinforcement Learning*    
+*high dimentional continguous control using GAE*
+
 ### not so owesome
+
+*Action Branching Architectures for Deep Reinforcement Learning* 解决action是多维的问题，这个方法正常人都能想出来。 based on dualing q network. 
 
 ### interesting applications
 
