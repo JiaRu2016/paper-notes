@@ -78,7 +78,53 @@ DouZero *DouZero: Mastering DouDizhu with Self-Play Deep Reinforcement Learning*
 - oneline dispatch: solve `a = argmax_a Q(s, a)` with KM algriom. 一种确定性算法，输入二分图及其权重，输出一个使权值和最大的匹配方案，这里权重就是offline估计出来的`Q(s,a)`
 
 
-## GNN / spatio-temperal
+## GNN
+
+### surveys
+
+*A Comprehensive Survey Of Graph Neutral Network*
+
+*A Comprehensive Survey Of Graph Embedding*
+
+*Deep Learning On Graphs - A Survey*
+
+*GNN in recomendation system A Survey*
+
+### papers
+
+*node2vec: Scalable Feature Learning for Networks*
+
+GCN. *Semi-supervised classificication with graph convolutional networks*
+
+GraphSAGE. *Inductive Representation Learning on Large Graphs*
+
+GAT. *Graph Attenion Netoworks*
+
+HAN. *Heterogeneous Graph Attention Network*
+
+*struc2vec: Learning Node Representations from Structural Identity*. see video
+
+NRI
+
+PinSAGE
+
+SGC, simplified GCN
+
+Fast GCN
+
+LINE
+
+*Measuring and Relieving the Over-smoothing Problem for Graph Neural Networks from the Topological View*
+
+*mulit-hop Attention GNN*
+
+*Attention Based Spatial-Temporal Graph Convolutional Networks for Traffic Flow Forecasting*
+
+*Hypergraph Neutral Network*
+
+### frameworks
+
+*DGL: a grpah-centric, highly-performant package for graph networks*
 
 
 ## tree
