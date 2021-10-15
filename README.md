@@ -4,6 +4,16 @@ ML, DL paper reading notes
 
 ## optimization / training diagram
 
+*Training ImageNet in 1 Hour* by Facebook
+
+*Visualizing the Loss Landscape of Neural Nets*
+
+CyclicalLR *Cyclical Learning Rates for Training Neural Networks*
+
+*Super-Convergence: Very Fast Training of Neural Networks Using Large Learning Rates*
+
+*CurriculumLearning* 2009_ICML
+
 
 ## distributed DL
 
