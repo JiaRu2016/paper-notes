@@ -137,6 +137,11 @@ LINE
 *DGL: a grpah-centric, highly-performant package for graph networks*
 
 
+## unsupervised / GAN
+
+GAN *Generative Adversarial Nets*. Define the min-max math problem and give training algriothm. Theoretical proof optimial D `=p_data / (p_data + p_g)` and G `p_G = p_data`. See code `gan.py`
+
+
 ## tree
 
 
