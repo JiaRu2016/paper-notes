@@ -14,13 +14,13 @@ import time
 
 class Hparam:
     IMG_SIZE = 25
+    LABEL_VOCAB_SIZE = 10
 
     def __init__(self):
         self.bz = 32
         self.noise_dim = 50
         self.d = 16
-        # self.label_embedding_dim = 16
-        # self.LABEL_VOCAB_SIZE = 10
+        self.label_embedding_dim = 16
         self.disc_n_step = 1
         self.lr = 2e-4
         self.beta1 = 0.5
@@ -57,12 +57,13 @@ class Discriminator(nn.Module):
     def __init__(self, hp: Hparam):
         super().__init__()
         self.d = hp.d
-        #self.label_embedding_dim = hp.label_embedding_dim
-        #self.LABEL_VOCAB_SIZE = hp.LABEL_VOCAB_SIZE
-        #self.emb = nn.Embedding(self.LABEL_VOCAB_SIZE, self.label_embedding_dim)
+        self.IMG_SIZE = hp.IMG_SIZE
+        self.emb_dim = hp.IMG_SIZE ** 2
+        self.LABEL_VOCAB_SIZE = hp.LABEL_VOCAB_SIZE
+        self.emb = nn.Embedding(self.LABEL_VOCAB_SIZE, self.emb_dim)
         self._disc = nn.Sequential(
-            # (bz, 1, 25, 25)
-            nn.Conv2d(1, 1 * self.d, 4, 1),
+            # (bz, 1+1, 25, 25)
+            nn.Conv2d(2, 1 * self.d, 4, 1),
             nn.BatchNorm2d(self.d),
             nn.LeakyReLU(0.2, True),
             # (bz, d, 22, 22)
@@ -80,7 +81,8 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, x: FloatTensor, label: LongTensor) -> FloatTensor:
-        #x = torch.cat([x, self.emb(label)], dim=1)
+        emb_channel = self.emb(label).view((-1, 1, self.IMG_SIZE, self.IMG_SIZE))
+        x = torch.cat([x, emb_channel], dim=1)
         return self._disc(x).view(-1)
 
 
@@ -89,12 +91,12 @@ class Generator(nn.Module):
         super().__init__()
         self.noise_dim = hp.noise_dim
         self.d = hp.d
-        #self.label_embedding_dim = hp.label_embedding_dim
-        #self.LABEL_VOCAB_SIZE = hp.LABEL_VOCAB_SIZE
-        #self.emb = nn.Embedding(self.LABEL_VOCAB_SIZE, self.label_embedding_dim)
+        self.label_embedding_dim = hp.label_embedding_dim
+        self.LABEL_VOCAB_SIZE = hp.LABEL_VOCAB_SIZE
+        self.emb = nn.Embedding(self.LABEL_VOCAB_SIZE, self.label_embedding_dim)
         self._gen = nn.Sequential(
             # (bz, noise_dim, 1, 1)
-            nn.ConvTranspose2d(self.noise_dim, 4 * self.d, 4, 2),
+            nn.ConvTranspose2d(self.noise_dim + self.label_embedding_dim, 4 * self.d, 4, 2),
             nn.BatchNorm2d(4 * self.d),
             nn.ReLU(True),
             # (bz, 4d, 4, 4)
@@ -112,8 +114,8 @@ class Generator(nn.Module):
         )
     
     def forward(self, z: FloatTensor, label: LongTensor) -> FloatTensor:
-        #z_and_label = torch.cat([z, self.emb(label)], dim=1)
-        return self._gen(z)
+        z_and_label = torch.cat([z, self.emb(label).view(-1, self.label_embedding_dim, 1, 1)], dim=1)
+        return self._gen(z_and_label)
 
 
 def train():
