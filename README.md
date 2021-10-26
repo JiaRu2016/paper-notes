@@ -132,6 +132,15 @@ LINE
 
 *Hypergraph Neutral Network*
 
+
+DiffPool *Hierarchical Graph Representation Learning with Differentiable Pooling* 
+
+- Apply "pooling" layer on graph. 
+- Layer inptut is $A^l$, $X^l$, Assignment Matrix $S^l = GNN_{l,pool}(A^l, X^l)$, embedding features $Z^l = GNN_{l,emb}(A^l, X^l)$. Layer output $X^{l+1} = (S^l)^T Z^l$, $A^{l+1} = (S^l)^T A^l S^l$
+- It's very like attention, $\alpha$ is the assignment matrix $S$ and $V$ is embedding $Z$, each is learned by a per-layer GNN
+- disadvantage: not scalable. Implicitly assuming fully conneted graph. However it's graph prediction task thus I pursume the graph may not be too large
+
+
 ### frameworks
 
 *DGL: a grpah-centric, highly-performant package for graph networks*
