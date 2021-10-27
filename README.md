@@ -138,7 +138,10 @@ DiffPool *Hierarchical Graph Representation Learning with Differentiable Pooling
 - Apply "pooling" layer on graph. 
 - Layer inptut is $A^l$, $X^l$, Assignment Matrix $S^l = GNN_{l,pool}(A^l, X^l)$, embedding features $Z^l = GNN_{l,emb}(A^l, X^l)$. Layer output $X^{l+1} = (S^l)^T Z^l$, $A^{l+1} = (S^l)^T A^l S^l$
 - It's very like attention, $\alpha$ is the assignment matrix $S$ and $V$ is embedding $Z$, each is learned by a per-layer GNN
-- disadvantage: not scalable. Implicitly assuming fully conneted graph. However it's graph prediction task thus I pursume the graph may not be too large
+- disadvantage (found after trying code implemention)
+    + not scalable. Adj matrix is soft thus must use dense, even if we sign() to sparse adj it's not differenciable. That's why this paper titled  "Diff"Pool
+    + not scalable if "batch" a graph. Adj matrix size is `(bz * n) ^ 2`, and we also need to calculate `batch_mask` according to input/ouput number_of_nodes/clusters
+    + number of nodes/cluster must be pre-specified. Just like image size must be fixed, here even if input n_nodes could be different, each layer's number of cluster must be same.
 
 
 ### frameworks
