@@ -38,8 +38,11 @@ GPipe *Efficient Training of Giant Neural Networks using Pipeline Parallelism* ä
 
 ## NLP / seq models
 
-[seq2seq machine translation] `code/nlp/seq2seq.py`
+*Attention is all you need*  `code/nlp/seq2seq_tfm.py` 
+- src -> Encoder -> memroy -> +tgt decoder -> yh && **shifted_y** -> loss && backward
+- evaluation: predict yh step-by-step
 
+[seq2seq machine translation] `code/nlp/seq2seq_lstm.py`
 - padding. `BucketIterator` minimize total num of padding, by batching similar seq_len records together
 - decoder is step-by-step, use *teacher_forcing* with a prob for some token
 

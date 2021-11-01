@@ -4,14 +4,8 @@ https://github.com/bentrevett/pytorch-seq2seq/blob/master/1%20-%20Sequence%20to%
 
 import torch
 import torch.nn as nn
-from torchtext.legacy.datasets import Multi30k
-from torchtext.legacy.data import Field, BucketIterator
 import random
-
-
-# forward declare
-class data_pipelie:
-    pass
+from seq2seq_datapipeline import data_pipelie
 
 
 class Hparam():
@@ -30,58 +24,15 @@ class Hparam():
         self.TGT_PADDING_IDX = None
         self.TGT_SOS_IDX = None
     
+    def __repr__(self):
+        return f'bz{self.bz}_e{self.edim}_h{self.hdim}_nlayer{self.nlayer}__vocab_{self.SRC_VOCAB_SIZE}_{self.TGT_VOCAB_SIZE}'
+    
     def set_data_related_fields(self, data: data_pipelie):
         self.SRC_VOCAB_SIZE = data.SRC_VOCAB_SIZE
         self.TGT_VOCAB_SIZE = data.TGT_VOCAB_SIZE
         self.SRC_PADDING_IDX = data.SRC_PADDING_IDX
         self.TGT_PADDING_IDX = data.TGT_PADDING_IDX
         self.TGT_SOS_IDX = data.TGT_SOS_IDX
-
-
-class data_pipelie():
-    def __init__(self, hp: Hparam):
-        self.SRC_VOCAB_SIZE = 0
-        self.TGT_VOCAB_SIZE = 0
-        self.SRC_PADDING_IDX = 1
-        self.TGT_PADDING_IDX = 1
-        self.TGT_SOS_IDX = 2
-        self.train_iter = None
-        self.valid_iter = None
-        self.test_iter = None
-        self.__initalize(hp)
-        
-    def __initalize(self, hp):
-        src_field = Field(init_token='<sos>', eos_token='<eos>', lower=True)
-        tgt_field = Field(init_token='<sos>', eos_token='<eos>', lower=True)
-
-        train_ds, valid_ds, test_ds = Multi30k.splits(
-            exts = ('.de', '.en'), 
-            fields = (src_field, tgt_field),
-            root='/home/rjia/playground/datasets/'
-        )
-        # train_ds.__class__
-        # isinstance(train_ds, torch.utils.data.Dataset)  # True
-        # a = train_ds[0]
-        # a.__class__
-        # a.src
-        # a.trg
-        
-        src_field.build_vocab(train_ds, min_freq=10)
-        tgt_field.build_vocab(train_ds, min_freq=10)
-
-        # for tk in [src_field.unk_token, src_field.pad_token, src_field.init_token, src_field.eos_token]:
-        #     print(tk, src_field.vocab.stoi[tk])
-
-        self.SRC_VOCAB_SIZE = len(src_field.vocab)
-        self.TGT_VOCAB_SIZE = len(tgt_field.vocab)
-        self.SRC_PADDING_IDX = src_field.vocab.stoi[src_field.pad_token]
-        self.TGT_PADDING_IDX = tgt_field.vocab.stoi[tgt_field.pad_token]
-        self.TGT_SOS_IDX = tgt_field.vocab.stoi[tgt_field.init_token]
-
-        self.train_iter, self.valid_iter, self.test_iter = BucketIterator.splits(
-            (train_ds, valid_ds, test_ds),
-            batch_size=hp.bz
-        )
 
 
 class Encoder(nn.Module):
@@ -141,7 +92,7 @@ class Seq2seq(nn.Module):
 
 def main():
     hp = Hparam()
-    data = data_pipelie(hp)
+    data = data_pipelie(hp.bz)
     hp.set_data_related_fields(data)
 
     model = Seq2seq(hp)
