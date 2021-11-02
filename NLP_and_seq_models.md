@@ -14,7 +14,7 @@
 
 ### BERT
 
-`code/nlp/bert/` doing...
+`code/nlp/bert/`
 
 亿点实现细节
 - 数据集
