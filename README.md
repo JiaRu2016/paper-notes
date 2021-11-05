@@ -38,7 +38,7 @@ GPipe *Efficient Training of Giant Neural Networks using Pipeline Parallelism* ä
 
 ## NLP / seq models
 
-move to [NLP_and_seq_model](NLP_and_seq_model.md)
+move to [NLP_and_seq_model](./NLP_and_seq_model.md)
 
 ## RL
 
