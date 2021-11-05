@@ -70,5 +70,45 @@ $$
 
 ## Frameworks
 
-*DGL: a grpah-centric, highly-performant package for graph networks*
 
+### Sampling graph - DGL
+
+[dgl: Customizing neighborhood sampler](https://docs.dgl.ai/en/0.6.x/guide/minibatch-custom-sampler.html#guide-minibatch-customizing-neighborhood-sampler)
+
+用户需实现`BlockSampler.ample_fronterior()`, 该接口输入原始图`g`和上层`seed_nodes`，返回 sampled neighbor，返回类型是一个（二分）图 `DGLHeteroGraph`。注意每一层都有各自不同的 src-dst二分图，dgl称之为 *MessageFlowGraph*, MFG, 即 model forward 每一层用的是不同的graph. 注意src中的nodes即使在原图中有连接，在当前block也不做信息传递，如果两方都不在seed中的话。
+
+sampler对象传入DataLoader, dataloader就会产生 blocks, which is list of (biparti)graph 而非一个单一的graph
+
+blocks传入model.forward(), model.forward中定义哪个层用哪个block
+
+```python
+sampler = MyAwesomeSampler(**kwargs)
+dataloader = dgl.dataloading.NodeDataLoader(..., sampler, ...)
+
+for blocks in dataloader:
+    x = blocks[0].srcdata
+    y = blocks[-1].dstdata
+    yh = model(blocks, x)
+    loss = loss_fn(yh, y)
+
+# where
+class MyAwesomeSampler(BlockSampler):
+    def sample_frontier(self, block_id, g, seed_nodes):
+        return frontier_g   # it's a (biparti)DGLHeteroGraph
+
+class MyModel(nn.Module):
+    def forward(self, blocks, x):
+        # block is List[DGLBlock], DGLBlock is subclass of DGLHeteroGraph
+        x = self.conv1(blocks[0], x)
+        x =  self.conv1(blocks[1], x)
+        return x
+```
+
+
+### Minibatch - PyG
+
+
+### [DGL paper] *DGL: a grpah-centric, highly-performant package for graph networks*
+
+
+### [PyG paper] *Fast Graph Representation Learning with PyTorch Geometric*
