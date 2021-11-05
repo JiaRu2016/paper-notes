@@ -1,5 +1,32 @@
 ## NLP and seq models
 
+### BERT
+
+`code/nlp/bert/` doing...
+
+亿点实现细节
+- 数据集
+    + 数据集大小：完全没有想象中那么多，BookCorpors压缩后1.1G 解压后4.6G. txt 和 int 都可以完全放进内存
+    + Vocab构建速度：立等可取，纯python无优化
+- Model Parallel. base and large 实现了pytorch模型并行。[关于效率问题的讨论](https://github.com/huggingface/transformers/issues/10151#issuecomment-778574713) Summarize: pytorch model parallel 就是打不满GPU, pipeline又太麻烦。
+- model struct: 
+
+```python
+def forward(self, batch):
+    is_next, sx, sy, msk, seg = batch
+    # sx, sy, msk, seg (seq_len, bz); is_next (bz,)
+    src = self.emb(sx) + self.seg_emb(seg) + self.__pos_emb(sx.shape[0])
+    mem = self.encoder(src, src_key_padding_mask=self.__key_padding_mask(sx))
+    # next sentence prediction
+    nsp_yh = self.nsp_module(mem[0, :, :]).view(-1)  # (bz, )
+    nsp_loss = self.nsp_loss_fn(nsp_yh, is_next.float())
+    # masked language model
+    mlm_yh = self.mlm_module(mem)  # (seq_len, bz, VOCAB_SIZE)
+    mlm_loss_all = self.mlm_loss_fn(mlm_yh.flatten(0,1), sy.flatten(0,1))
+    mlm_loss = torch.mean(mlm_loss_all[msk.flatten(0,1)])
+```
+
+
 ### *Attention is all you need*  
 
 `code/nlp/seq2seq_tfm.py` 
