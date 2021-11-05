@@ -1,5 +1,17 @@
 ## NLP and seq models
 
+### DistillBERT
+- teacher-student paradiam. Distillation loss $L = \sum_c t_c * log(s_c)$
+    + CrossEntropy loss with soft label: here $t_c$ is soft
+    + compare with MSE loss.
+- softmax-temperatrue, it's like label smoothing
+- supervised training loss $L_{mlm}$
+- cosine embedding loss $L_{cos}$
+- use RoBERTa train tricks: very large batch (use gradient accumulation impl), dynamic mask (my impl in BERT code), without nsp task.
+- Student Arch: **只减少层数`num_layers` 而`d_model`不变**，因为 
+> Most of the operations ... are highly optimized in modern linear algebra frameworks and ... variations on the last dimension of the tensor (hidden size dimension) have a smaller impact on computation efﬁciency. Thus we focus on reducing the number of layers.
+
+
 ### BERT
 
 `code/nlp/bert/` doing...
@@ -24,6 +36,7 @@ def forward(self, batch):
     mlm_yh = self.mlm_module(mem)  # (seq_len, bz, VOCAB_SIZE)
     mlm_loss_all = self.mlm_loss_fn(mlm_yh.flatten(0,1), sy.flatten(0,1))
     mlm_loss = torch.mean(mlm_loss_all[msk.flatten(0,1)])
+    return mlm_loss + nsp_loss
 ```
 
 
