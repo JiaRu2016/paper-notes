@@ -99,6 +99,16 @@ mv to [GNN.md](./GNN.md)
 GAN *Generative Adversarial Nets*. Define the min-max math problem and give training algriothm. Theoretical proof optimial D `=p_data / (p_data + p_g)` and G `p_G = p_data`. See code `gan.py`
 
 
+## FewShot
+
+`code/onetshot/oneshot.py`. code according to https://www.youtube.com/playlist?list=PLvOO0btloRnuGl5OJM37a8c6auebn-rH2
+
+- Learn "is two image same class" instead of "class of an image".
+- Model arch: distance of two image's hidden feature representation `d = abs(h1 - h2)` where `h_1or2 = ConvNet(img_1or2)`
+- Loss: binary classification is_same, or margin-triplete-loss `max(0, margin + d(x, x_pos) - d(x, x_neg)`
+- evaluate: one-shot-n-way evaluation. hardmax the calss with hightest score.
+
+
 ## tree
 
 
