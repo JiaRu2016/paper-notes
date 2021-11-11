@@ -71,7 +71,7 @@ $$
 ## Frameworks
 
 
-### Sampling graph - DGL
+### Sampling graph
 
 [dgl: Customizing neighborhood sampler](https://docs.dgl.ai/en/0.6.x/guide/minibatch-custom-sampler.html#guide-minibatch-customizing-neighborhood-sampler)
 
@@ -102,6 +102,50 @@ class MyModel(nn.Module):
         x = self.conv1(blocks[0], x)
         x =  self.conv1(blocks[1], x)
         return x
+```
+
+
+PyG is similar, ref to [NeighborSampler](https://pytorch-geometric.readthedocs.io/en/latest/modules/loader.html?highlight=NeighborSampler#torch_geometric.loader.NeighborSampler)
+
+```python
+n_node = 100
+n_edge = 500
+
+edge_index = torch.stack([
+    torch.randint(n_node, size=(n_edge,)),
+    torch.randint(n_node, size=(n_edge,)),
+])
+x = torch.rand(size=(n_node, 64))
+y = torch.randint(10, size=(n_node,))
+
+gdata = pyg.data.Data(
+    x=x,
+    edge_index=edge_index,
+    edge_attr=None,
+    y=y,
+)
+
+k = 2
+nlayer = 3
+batch_size = 4
+
+train_dloader = pyg.data.NeighborSampler(
+    gdata.edge_index, 
+    sizes=[k] * nlayer,
+    # **kwargs to torch DataLoader
+    batch_size=batch_size,   # number of nodes in last biparti-graph dst
+    shuffle=True,
+    drop_last=False,
+)
+
+for bz, node_ids, bi_graph_lst in train_dloader:
+    print(bz)  # == batch_size except the last if drop_last=False
+    print(node_ids)  # LongTensor of size (n_subsample,)
+    print('----------------------------------------------')
+    for bi_graph in bi_graph_lst:
+        print(bi_graph.edge_index)
+        print('--------')
+    break
 ```
 
 
