@@ -12,6 +12,7 @@ class Hparam:
     def __init__(self):
         self.bz = 32
         self.FLATTEN_IMG_DIM = 784
+        self.IMG_HW = 28
         self.noise_dim = 64
         self.gen_hidden_dim = 256
         self.disc_hidden_dim = 128
@@ -26,7 +27,7 @@ def get_real_img_dataloader(bz):
         torchvision.transforms.ToTensor(), 
         torchvision.transforms.Normalize((0.5,), (0.5,))
     ])
-    p = '/home/rjia/datasets/torch_datasets/'
+    p = '/home/rjia/playground/datasets_torch'
     ds_train = torchvision.datasets.MNIST(p, train=True, transform=transform)
     ds_test = torchvision.datasets.MNIST(p, train=False, transform=transform)
     ds = ConcatDataset([ds_train, ds_test])
@@ -78,6 +79,7 @@ class Generator(nn.Module):
         self.noise_dim = hp.noise_dim
         self.hidden_dim = hp.gen_hidden_dim
         self.FLATTEN_IMG_DIM = hp.FLATTEN_IMG_DIM
+        self.IMG_HW = hp.IMG_HW
         self.label_embedding_dim = hp.label_embedding_dim
         self.LABEL_VOCAB_SIZE = hp.LABEL_VOCAB_SIZE
         self.emb = nn.Embedding(self.LABEL_VOCAB_SIZE, self.label_embedding_dim)
@@ -91,6 +93,11 @@ class Generator(nn.Module):
     def forward(self, z: FloatTensor, label: LongTensor) -> FloatTensor:
         z_and_label = torch.cat([z, self.emb(label)], dim=1)
         return self._gen(z_and_label)
+    
+    @torch.no_grad()
+    def predict(self, z: FloatTensor, label: LongTensor) -> FloatTensor:
+        fake = self(z, label)
+        return fake.view(-1, 1, self.IMG_HW, self.IMG_HW)
 
 
 def train():
@@ -155,9 +162,7 @@ def evaluate(hp: Hparam, tblogger: SummaryWriter, device: torch.device):
     fixed_noise, labels = fixed_noise.to(device), labels.to(device)
     while True:
         step, gen_model = yield
-        with torch.no_grad():
-            fake = gen_model(fixed_noise, labels)
-            fake = fake.cpu().view(-1, 1, 28, 28)
+        fake = gen_model.predict(fixed_noise, labels)
         tblogger.add_images('fake', fake, global_step=step)
 
 

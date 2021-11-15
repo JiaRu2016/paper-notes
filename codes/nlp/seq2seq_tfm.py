@@ -99,7 +99,8 @@ class Seq2SeqTransformer(nn.Module):
             out[:, 2 * i] = torch.sin(pos / 1e4 ** (2 * i / self.d_model))
             out[:, 2 * i + 1] = torch.cos(pos / 1e4 ** (2 * i / self.d_model))
         return out
-
+    
+    @torch.no_grad()
     def predict(self, x):
         self.eval()
         if x.shape[0] > self.SRC_MAX_SEQ_LEN:
@@ -107,17 +108,16 @@ class Seq2SeqTransformer(nn.Module):
         src_seq_len, bz = x.shape
         yh = x.new_full(size=(self.TGT_MAX_SEQ_LEN, bz), fill_value=self.TGT_SOS_IDX)
         pe = self.tgt_pe[:, None, :]
-        with torch.no_grad():
-            for t in range(self.TGT_MAX_SEQ_LEN - 1):
-                src = self.src_emb(x) + self.src_pe[:src_seq_len][:, None, :]
-                tgt = self.tgt_emb(yh) + pe
-                mem = self.tfm.encoder(src, src_key_padding_mask=self.__padding_mask(x, self.SRC_PADDING_IDX))
-                out = self.tfm.decoder(tgt, mem, tgt_mask=self.tgt_mask)
-                # out: (seq_len, bz, d_model)
-                out = self.output_yh(out)  # (seq_len, bz, TGT_VOCAB_SIZE)
-                out = out.argmax(-1)  # (seq_len, bz)
-                yh[t+1] = out[t]
-            return yh
+        for t in range(self.TGT_MAX_SEQ_LEN - 1):
+            src = self.src_emb(x) + self.src_pe[:src_seq_len][:, None, :]
+            tgt = self.tgt_emb(yh) + pe
+            mem = self.tfm.encoder(src, src_key_padding_mask=self.__padding_mask(x, self.SRC_PADDING_IDX))
+            out = self.tfm.decoder(tgt, mem, tgt_mask=self.tgt_mask)
+            # out: (seq_len, bz, d_model)
+            out = self.output_yh(out)  # (seq_len, bz, TGT_VOCAB_SIZE)
+            out = out.argmax(-1)  # (seq_len, bz)
+            yh[t+1] = out[t]
+        return yh
 
 
 def main():

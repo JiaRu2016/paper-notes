@@ -189,6 +189,7 @@ class SiameseNet(nn.Module):
         x = torch.tanh(self.fc2(x))
         return x
     
+    @torch.no_grad()
     def one_shot_n_way_eval(self, img_query, img_classes, class_idx):
         C, H, W = self.hp.IMG_N_CHANNEL, self.hp.IMG_HW_DIM, self.hp.IMG_HW_DIM
         bz, nway = class_idx.shape[0], img_classes.shape[1]
@@ -196,13 +197,12 @@ class SiameseNet(nn.Module):
         assert img_classes.shape == (bz, nway, C, H, W)
         assert class_idx.shape == (bz,)
         self.eval()
-        with torch.no_grad():
-            h_query = self.__extract_feature(img_query.expand(-1, nway, -1, -1, -1).flatten(0,1))
-            h_classes = self.__extract_feature(img_classes.flatten(0,1))
-            d = torch.abs(h_query - h_classes)  # (bz * nway, )
-            score = self.distance_score(d)      # (bz * nway, )
-            pred_class_idx = score.view(bz, nway).argmax(dim=1)  # (bz,)
-            return pred_class_idx == class_idx
+        h_query = self.__extract_feature(img_query.expand(-1, nway, -1, -1, -1).flatten(0,1))
+        h_classes = self.__extract_feature(img_classes.flatten(0,1))
+        d = torch.abs(h_query - h_classes)  # (bz * nway, )
+        score = self.distance_score(d)      # (bz * nway, )
+        pred_class_idx = score.view(bz, nway).argmax(dim=1)  # (bz,)
+        return pred_class_idx == class_idx
 
 
 def example_batch_train(hp: Hparam):
