@@ -42,6 +42,51 @@ LINE
 
 *Hypergraph Neutral Network*
 
+### VGAE
+ref:
+- [towards data science - VAEs](https://towardsdatascience.com、understanding-variational-autoencoders-vaes-f70510919f73). Explains why **Variational**: 
+    + (related to GAN). For **generate** meaningfull hidden z, estimate **prob distribution of z** conditional on input $p(z|x)$, instead of a single point-estimation of z
+    + suppress overfit. 
+- [PyG doc - GAE and VGAE](https://pytorch-geometric.readthedocs.io/en/latest/notes/colabs.html)
+- soruce code of `pyg.nn.GAE`, `pyg.nn.VGAE`
+
+notes:
+- `reparemterize(mu, sigma)` sample $z$ from $N(0,1)$ and let `z = mu + sigma * z` where `mu`, `sigma` is output of encoder net which keeps gradient-calculating.
+- `kl_loss`. details in my notebook
+$$
+- 2 * KL(N(\mu, \sigma^2)||N(0,1)) = ... = 1 + 2 \log(\sigma) - \mu^2 - \sigma^2
+$$
+
+pseudo-code of GAE and VGAE
+```python
+# gdata. One-graph-link-prediction task. eg. CiteSeer
+(   
+    train_pos_links, 
+    train_neg_links, 
+    test_pos_links, 
+    test_neg_links,
+) = \
+    get_train_pos_neg_links(gdata.edge_index)
+
+# layers
+encoder = GCN_Encoder()
+decoder = InnerProduct_Decoder()
+reconstruct_loss = BCELoss()
+kl_loss = lambda mu, sigma: 1 + 2 * log(sigma) - sigm**2 - mu**2
+
+# forward
+if not Variational:
+    z = encoder(x, edge_index)
+else:
+    mu, sigma = encoder(x, edge_index)
+    z = reparameterize(mu, sigma)
+pred_links = decoder(z, train_pos_links, train_neg_links)
+loss = reconstruct_loss(pred_links, train_pos_links, train_neg_links)
+if Variational:
+    loss += kl_loss(mu, sigma)
+loss.backward()
+```
+
 
 ### [DiffPool] *Hierarchical Graph Representation Learning with Differentiable Pooling* 
 
