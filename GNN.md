@@ -208,11 +208,20 @@ for bz, node_ids, bi_graph_lst in train_dloader:
 
 ### Minibatch - PyG
 
+- Used for many-graphs, (usually) graph-level-prediciton task.
+- concate `x`, `y`, diag concate adj matrix,  ie. concate coo `edge_index`
+
+more details ref to [扒源码-PyG](#pyg-扒源码)
+
 
 ### [DGL paper] *DGL: a grpah-centric, highly-performant package for graph networks*
 
 
 ### [PyG paper] *Fast Graph Representation Learning with PyTorch Geometric*
+
+
+### Pyg 扒源码
+TODO
 
 
 ### Quiver：based on PyG
