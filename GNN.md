@@ -128,7 +128,7 @@ $$
 ## Frameworks
 
 
-### Sampling graph
+### Sampling graph - DGL
 
 [dgl: Customizing neighborhood sampler](https://docs.dgl.ai/en/0.6.x/guide/minibatch-custom-sampler.html#guide-minibatch-customizing-neighborhood-sampler)
 
@@ -161,6 +161,8 @@ class MyModel(nn.Module):
         return x
 ```
 
+
+### Sampling graph - PyG
 
 PyG is similar, ref to [NeighborSampler](https://pytorch-geometric.readthedocs.io/en/latest/modules/loader.html?highlight=NeighborSampler#torch_geometric.loader.NeighborSampler)
 
@@ -220,7 +222,44 @@ more details ref to [扒源码-PyG](#pyg-扒源码)
 ### [PyG paper] *Fast Graph Representation Learning with PyTorch Geometric*
 
 
-### Pyg 扒源码
+### PyG 扒源码
+
+基于 1.6.3
+
+to-solve: import error when multiple version of torch installed
+
+#### PyG Class Hierarchy related to data handling
+
+- `Data` <- `Batch`
+- `torch_Dataset` <- `pyg_Dataset` <- `InMemoryDataset` <- `TUDataset` etc.
+- `torch_DataLoader` <- `pyg_DataLoader`
+- `iter(pyg_Dataset)` yield `Data`
+- `iter(pyg_DataLoader)` yield `Batch`
+
+基础数据结构 `Data`, 包含 图拓扑结构 `edge_index`, 节点特征 `x`, 边特征 `edeg_features`，以及标签 `y` 标签可以是 graph/node/edge级别的，shape随意
+```pyton
+Data(
+    x: Tensor[N, F_node],
+    edge_index: LongTensor[2, E]
+    y: Tensor[Any],
+    edge_attr: Tensor[E, F_edge],
+    ...
+)
+```
+
+对 list of `Data` 做 batching 得到 `Batch`, Batch 继承 Data, 增加`.batch`属性，`.batch: LongTensor = [0,0,0,1,1,2,2...42]` 用于记录每个节点原来属于哪个图，可被用于eg. `global_add_pool(x, batch)`，Batch对象通常使用静态构造函数`.from_data_list()`构造，这个函数实现了垂直合并`x`,`y`,对角线合并`edge_index`的逻辑。
+
+pygDataset 继承 torch.Dataset, 其定义遵循“有许多图、而非单一个大图”这种情况。 `__len__ == num_graph`, `__getitem__ == the i-th graph`, eg. `ds[0]`为第一个graph, 迭代 pyg`Dataset` 对象得到`Data`对象
+
+pygDataLoader 继承 torch.DataLoader, 唯一区别是 collate_fn, 若`samples`为`Data`对象，则调用`Batch.from_data_list()`
+
+对于“单一一个大图”的情况，需要做sampling形成"batch". `NeighborSampler` 继承 torch.DataLoader，接收`edge_index`, 迭代返回三元组`(bz, node_ids, edge_index_lst)`. 详见 [Sampling Graph - PyG](#sampling-graph-pyg)
+
+#### Message Passing
+
+
+#### jit trace
+
 TODO
 
 
