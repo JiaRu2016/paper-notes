@@ -257,6 +257,25 @@ pygDataLoader 继承 torch.DataLoader, 唯一区别是 collate_fn, 若`samples`�
 
 #### Message Passing
 
+propogate 依次调用 message, aggregate, update。为了节省内存，可以把 message和aggregate 合并成 message_and_aggregate。
+
+messag/aggregate/update需要的输入通过kwargs的变量名表达，被inspector解析。可以有如下几种输入
+- 后缀带 `_i`, `_j` 的，由 `__lift__` 生成。eg. `x_i = x[edge_index[0]]; x_j = x[edge_index[1]]`
+- 从传入 propagate() 的 kwargs 中找。这使我们可以传入任何对象到 message/aggregate/update
+- 一些特殊的args: `adj_t`, `edge_index[_i|_j]`, `ptr` `size[_i|_j]` ...
+
+```python
+class MessagePassing:
+    def propagate(self, edge_index, size, **kwargs):
+        # msg/aggr/update_kwargs __collect__ from inspector
+        if 'implement message_and_aggregate':
+            out = self.message_and_aggregate(edge_index, **msg_aggr_kwargs)
+            out = self.update(out, **upddate_kwargs)
+        else:
+            out = self.message(**msg_kwargs)
+            out = self.aggregate(out, **aggr_kwargs)
+            out = self.update(out, **update_kwargs)
+```
 
 #### jit trace
 
