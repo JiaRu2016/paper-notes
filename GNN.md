@@ -281,6 +281,28 @@ class MessagePassing:
 
 TODO
 
+#### util pkgs: torch_scatter/sparse/cluster
+
+先行知识：稀疏矩阵存储
+
+- COO: edge_index_i/j
+- CSR: (rowptr, col, value)
+
+torch_scatter
+
+GroupBy-Agg functions:
+- `scatter(x, index)`  reuduce: sum,mean,min,max,mul,std,logsumexp,softmax,logsoftmax
+- `segment_csr(x, rowptr, reduce='sum')` segment_sum/mean/min/max_csr
+- `segment_coo(x, edge_index_i, reduce='sum')` segment_sum/mean/min/max_coo
+
+Gather functions, used in `__lift__`
+- `gather_csr`
+- `gather_coo`
+
+torch_sparse: 定义 `SparseTensor`, `SparseStorage` 以及一系列稀疏矩阵算子: Coalesce, Transpose, spmm, spspmm
+
+torch_cluster: 一些 graph cluster 算法的高效实现， eg. random_walk sampling in node2vec
+
 
 ### Quiver：based on PyG
 
