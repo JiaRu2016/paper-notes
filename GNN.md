@@ -228,6 +228,8 @@ more details ref to [扒源码-PyG](#pyg-扒源码)
 
 to-solve: import error when multiple version of torch installed
 
+[pyg source code explore](./codes/gnn/pyg_source_code.py)
+
 #### PyG Class Hierarchy related to data handling
 
 - `Data` <- `Batch`
