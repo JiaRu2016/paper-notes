@@ -201,3 +201,31 @@ for bz, node_ids, bi_graph_lst in train_dloader:
 
 
 ### [PyG paper] *Fast Graph Representation Learning with PyTorch Geometric*
+
+
+### Quiver：based on PyG
+
+[设计简介](https://github.com/quiver-team/torch-quiver/blob/main/docs/Introduction_cn.md)
+
+解决的问题：Sampling one-large graph 特别慢，是整个训练pipeline的性能瓶颈。包括两个部分：
+1. 采样nodes `node_id, edge_indexs = next(NeighborSampler())`
+2. slicing node features `x[node_id]`
+
+1_ 采样：
+- 现有的方式
+    + 在CPU采样：本身性能低，另外随着进程数变多cpu占用也相应变多，这就不scalable
+    + 在GPU采样：显存大小限制 （Q: 一亿个边内存占用也才 1.4 G，这个得是billion级别#edge才会成为问题）
+- 解决方案：CUDA特性 **Unified Virtual Address, UVA**, (since CUDA 4.0). 简单的说就是 host memroy 和 device memory在一个统一的地址空间，对程序员透明
+    + TODO: 它和 `cudaMemoryManaged` 什么关系？
+
+2_ Feature Collection (Slicing x)
+- 现有方式的问题：GPU上显存显然不够，CPU上问题同上，不scalable
+- 解决方案：cache hot data in GPU
+    + 重要假设：nodes在edges中的出现服从幂律分布
+    + 先行知识：访存速度 GPU > GPU p2p with NVlink > pined host memory
+    + Cache stategy: 
+        + 单卡 20% hot data to GPU
+        + 多卡 根据NVLink拓扑结构确定 replica or p2p
+    + 好处：随着GPU数量增加，总GPU显存也在增加，有NVLink情况下可获得**超线性加速比**
+
+
