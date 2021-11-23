@@ -255,7 +255,9 @@ pygDataset 继承 torch.Dataset, 其定义遵循“有许多图、而非单一�
 
 pygDataLoader 继承 torch.DataLoader, 唯一区别是 collate_fn, 若`samples`为`Data`对象，则调用`Batch.from_data_list()`
 
-对于“单一一个大图”的情况，需要做sampling形成"batch". `NeighborSampler` 继承 torch.DataLoader，接收`edge_index`, 迭代返回三元组`(bz, node_ids, edge_index_lst)`. 详见 [Sampling Graph - PyG](#sampling-graph-pyg)
+对于“单一一个大图”的情况，需要做某种 sampling 形成训练模型所需的一个"batch". 
+- `NeighborSampler` 继承 torch.DataLoader，接收`edge_index`, 迭代产生三元组`(bz, node_ids, edge_index_lst)`. 详见 [Sampling Graph - PyG](#sampling-graph-pyg)
+- 基于 random walk 的采样方式， eg. `Node2vec`, `Metapath2vec`, Module实现了`loader()`方法, 返回 torch_DataLoader 对象, 迭代产生二元组`(pos_rw, neg_rw)`
 
 #### Message Passing
 
