@@ -12,8 +12,6 @@
 
 ## papers
 
-*node2vec: Scalable Feature Learning for Networks*
-
 GCN. *Semi-supervised classificication with graph convolutional networks*
 
 GraphSAGE. *Inductive Representation Learning on Large Graphs*
@@ -41,6 +39,20 @@ LINE
 *Attention Based Spatial-Temporal Graph Convolutional Networks for Traffic Flow Forecasting*
 
 *Hypergraph Neutral Network*
+
+### Node2vec, Metapath2vec
+
+TODO: papers
+
+PyG impl:
+- train:
+    + batch is a pair of `(pos_rw, neg_rw)`, `pos_rw` is sampled by random walk, `neg_rw` is random picked from all nodes.
+        * random_walk: `rw = random_walk(adj, starting_nodes, walk_length, p, q)`, then rolling to get walks with sequence length of `context_size`
+        * metapath: ??? PyG impl: same as random_walk, ie treat hetero graph as homo graph, but constraint walking through predefined metapath.
+    + model: only one trainable prameter: `nn.Embedding(n_node, emb_dim)`
+    + loss: "is_context", ie. the rest nodes is the "context" of the first node. `emb_distance = InnerProduct(emb(seq[0]), emb(seq[j])) for j in 1~n_walk`, `loss = BCELoss(sigmoid(emb_distance), is_context)`
+- eval: node embedding as input, node y as target, run a simple LR using sklearn.
+
 
 ### VGAE
 ref:
