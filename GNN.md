@@ -281,9 +281,80 @@ class MessagePassing:
             out = self.update(out, **update_kwargs)
 ```
 
-#### jit trace
+#### jit
 
-TODO
+##### `torch.jit.script/trace`
+
+refs:
+- [Introduction](https://pytorch.org/tutorials/beginner/Intro_to_TorchScript_tutorial.html)
+- [end2end example](https://pytorch.org/tutorials/advanced/cpp_export.html)
+- [doc](https://pytorch.org/docs/stable/jit.html#disable-jit-for-debugging)
+- [TorchScript不支持的操作](https://pytorch.org/docs/stable/jit_unsupported.html)
+
+Summary:
+
+- `torch.jit.trace`实际运行`example_inputs`生成IR，无法正确处理不同input走到不同control-flow的情况
+- 优先使用`torch.jit.script`
+    + control flow
+    + for loop
+
+```python
+torch.jit.script(model)
+torch.jit.trace(model, example_inputs)
+```
+
+Why / What is TorchScript?
+> TorchScript is a way to create serializable and optimizable models from PyTorch code.  Any TorchScript program can be saved from a Python process and loaded in a process **where there is no Python dependency.**
+
+
+##### PyG `m.jittable()` then `torch.jit.script()`
+
+TODO: Expected a value of type 'Tensor' for argument 'edge_index' but instead found type 'Optional[Tensor]'.
+
+`MessagePassing`实现了`jittable()`方法，它通过分析class定义，生成一个新的、jittable的class代码（这个class实际上继承原class），并new一个新的实例返回。新的class代码从一个jinja模板填空生成，可以在 `/tmp/$USER_pyg_jit/tmpxxxxx.py` 中找到生成的新class的代码，与模板对比。
+
+`jittable()`源码：
+```python
+class MessagePassing(torch.nn.Module):
+    def jittable(self, typing: Optional[str] = None):
+        # ... get templete args ...
+        with open('message_passing.jinja') as f:
+            template = Template(f.read())
+        jit_module_repr = template.render(  ...args...  )
+        # Instantiate a class from the rendered JIT module representation.
+        cls = class_from_module_repr(cls_name, jit_module_repr)
+        module = cls.__new__(cls)
+        module.__dict__ = self.__dict__.copy()
+        module.jittable = None
+        return module
+```
+
+生成的 Jiatable class 代码
+```python
+from torch_geometric.nn.conv.message_passing import *
+from my_file import *   # 还是会用到你自己原来的代码
+
+# 假设原来的类叫做 NodeEdgeConv
+class NodeEdgeConvJittable_272c79(NodeEdgeConv):
+    def __check_input__(...)
+    def __lift__(...)
+    def __collect__(...)
+
+    # 依次调用 message/aggregate/update
+    # 但这三个函数没在这里重新实现，会去找原始类`NodeEdgeConv`中的定义
+    # 所以要确保你自己写的这三个函数也是jittable的
+    def propagate(self, edge_index, x, edge_attr, size=None):
+        # kwargs ...
+        out = self.message(edge_attr=kwargs.edge_attr, x_j=kwargs.x_j, x_i=kwargs.x_i)
+        out = self.aggregate(out, edge_index=kwargs.edge_index)
+        return self.update(out, x=kwargs.x, edge_attr=kwargs.edge_attr)
+
+    # 完全是原来的类的code抄过来，所以要自己确保forward函数是jittable的
+    def forward(self, x, edge_attr, edge_index):
+        out_x, out_e = self.propagate(edge_index, x=x, edge_attr=edge_attr)
+        return out_x, out_e
+```
+
 
 #### util pkgs: torch_scatter/sparse/cluster
 
