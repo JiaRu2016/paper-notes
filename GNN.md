@@ -297,6 +297,7 @@ Summary:
 - 优先使用`torch.jit.script`
     + control flow
     + for loop
+- 默认 `module.forward`, 如有其它计算流，eg. `module.eval_forward`, `actor_critic.act`, 加上 `@torch.jit.export`
 
 ```python
 torch.jit.script(model)
@@ -304,6 +305,11 @@ torch.jit.trace(model, example_inputs)
 ```
 
 Why / What is TorchScript?
+
+> TorchScript is a statically typed **subset of Python** 
+
+哪些python/pytorch函数支持、哪些不支持，需要查这个 [1:1 mapping 文档](https://pytorch.org/docs/stable/jit_python_reference.html#python-language-reference)
+
 > TorchScript is a way to create serializable and optimizable models from PyTorch code.  Any TorchScript program can be saved from a Python process and loaded in a process **where there is no Python dependency.**
 
 
