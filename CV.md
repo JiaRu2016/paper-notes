@@ -31,3 +31,14 @@ Transfromer 与 CNN 的比较
     1. 学到的LinearEmbedding层参数, RGB embedding filters (first 28 principal components)
 
 
+### [MAE] *Masked Autoencoders Are Scalable Vision Learners*
+
+自监督预训练、在下游任务精调，超过有监督
+
+model:
+- input -> mask (remove 75% patchs) + pos_embedding -> Encoder -> latent
+- concate(latent, MASK) + pos_embedding -> Deocder -> reconstruct_loss
+note:
+- 进入Encoder的只有 visiable patch, 为了减少计算量和内存占用，使得Encoder可以更大
+- lightweight decoder, decoder only used in pre-training and discarded when finetune
+- TODO: *Linear probing* ?
