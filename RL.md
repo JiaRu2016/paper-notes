@@ -1,5 +1,18 @@
 # RL
 
+## David Silver Course
+
+### 08_Model-based RL
+
+- "model" is estimating the env: modeling $\eta$: $P(s_{t+1}|s_t,a_t)$, $R(s_t, a_t)$
+- Model-based RL: Learn model from experience, and **plan** value function and/or policy from simulated experience
+- Dyna: **learn and plan** ... 
+    + Dyna-Q altrithom: 在平行世界里(in previsous state s)用model代替env,再多更新几次Q(s,a)
+- MC tree search
+    + from current root
+    + only search sub-paths of the tree: search and evaluate dynamically, only go deeper to current best (greedy search)
+
+
 ## awesome
 
 - DQN. *Playing Atari with Deep Reinforcement Learning*    
