@@ -80,3 +80,5 @@ About MCTS:
 - 围棋游戏复杂度 $b^d$ 其中 $b$ 为宽度，即可选择的action个数，=19*19；$d$为深度，即游戏长度，=100~200
 - 简化搜索树无非是从两个方面 1. sample actions ($b$) using policy net; 2. truncate $d$ using value net
 - 具体方式：ref to paper or David Silver course ppt
+- 工程实现 todo
+
