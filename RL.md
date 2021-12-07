@@ -60,3 +60,23 @@ by MSRA. 看视频就ok
 - define one day as one episode, 
 - state defined as `s = (grid, time)`,  offline learn `V(s)`, thus we know `Q(s,a) = r + V(s')`
 - oneline dispatch: solve `a = argmax_a Q(s, a)` with KM algriom. 一种确定性算法，输入二分图及其权重，输出一个使权值和最大的匹配方案，这里权重就是offline估计出来的`Q(s,a)`
+
+
+### AlphaGo
+
+*Mastering the game of Go with deep neural networks and tree search*
+
+overview:
+- Supervised Learning (SL), learn policy net $p_\sigma$ from human expert
+- RL policy net: init by $p_\sigma$, self-play training, got $p_\rho$
+- train Value net $V_\theta$ with RL self-play data and MSE loss
+- infer: combine fast policy net $p_\pi$ (for rollout), value net $V$ and MCTS
+
+model arch: 
+- input: 19 x 19 x C. board current state, history and domain knowledge features (broadcast to 19x19 if is scaler)
+- model: 13 layer Conv
+
+About MCTS: 
+- 围棋游戏复杂度 $b^d$ 其中 $b$ 为宽度，即可选择的action个数，=19*19；$d$为深度，即游戏长度，=100~200
+- 简化搜索树无非是从两个方面 1. sample actions ($b$) using policy net; 2. truncate $d$ using value net
+- 具体方式：ref to paper or David Silver course ppt
