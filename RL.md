@@ -80,5 +80,15 @@ About MCTS:
 - 围棋游戏复杂度 $b^d$ 其中 $b$ 为宽度，即可选择的action个数，=19*19；$d$为深度，即游戏长度，=100~200
 - 简化搜索树无非是从两个方面 1. sample actions ($b$) using policy net; 2. truncate $d$ using value net
 - 具体方式：ref to paper or David Silver course ppt
-- 工程实现 todo
 
+### Alpha Go Zero
+
+- trained solely by self-play RL
+- only raw board features
+- sinlge model, output value and policy:  $(p, v) = f_\theta(s)$
+- simpler tree search (as target $\pi$)
+- train: make policy $p$ closer to tree search policy $\pi$, value $v$ closer to simulated game output $z$
+
+$$
+loss = (z - v)^2 - \pi^T \log p + c||\theta||^2
+$$
