@@ -44,3 +44,14 @@ note:
 - 进入Encoder的只有 visiable patch, 为了减少计算量和内存占用，使得Encoder可以更大
 - lightweight decoder, decoder only used in pre-training and discarded when finetune
 - Linear probing: fixed fature map, do not tune
+
+
+### [MLP-Mixer] An all-MLP Architecture for Vision
+
+只看图就行了
+
+- 意义：证明 CNN 和 Transformer 都不是必需的, MLP也足以达到相同的performence
+- 分别在 patch 和 channels 两个维度上使用MLP
+    + 在 patch 维度上的 MLP 代替了 self_attention
+    + 在 channels 维度上的 MLP 就是 positional_feed_forward
+- 2 trainable modules: `MLP_1(patch_size -> patch_size)`, `MLP_2(c -> c)`
