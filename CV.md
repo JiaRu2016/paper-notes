@@ -16,7 +16,8 @@ Transfromer 与 CNN 的比较
 其他
 - fintuneing at highter resolution images:
     + 这里的做法: patch_size不变，effective sequence length 变长， position embedding 2D差值
-    + My Opinion: 可以压缩到原始的resolution更 make sence, 因为图片更大而patch_size不变，相对的 receptive field 就变了
+    + My Opinion: ~~可以压缩到原始的resolution更 make sence, 因为图片更大而patch_size不变，相对的 receptive field 就变了~~
+        - if pix level prediction task, patch should be fixed 16x16
 - **linear-few-shot-eval**
     + take a subset of samples, use the frozen reprezentation as input x, solving a regularized Least Square regression problem, then take 5 samples for each class for eval (5-shot eval)
     + for fast one-the-fly eval where fine tuning is costly
