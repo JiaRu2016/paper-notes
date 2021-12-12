@@ -43,4 +43,4 @@ model:
 note:
 - 进入Encoder的只有 visiable patch, 为了减少计算量和内存占用，使得Encoder可以更大
 - lightweight decoder, decoder only used in pre-training and discarded when finetune
-- TODO: *Linear probing* ?
+- Linear probing: fixed fature map, do not tune
