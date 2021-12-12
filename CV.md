@@ -46,7 +46,7 @@ note:
 - Linear probing: fixed fature map, do not tune
 
 
-### [MLP-Mixer] An all-MLP Architecture for Vision
+### *MLP-Mixer: An all-MLP Architecture for Vision*
 
 只看图就行了
 
@@ -55,3 +55,15 @@ note:
     + 在 patch 维度上的 MLP 代替了 self_attention
     + 在 channels 维度上的 MLP 就是 positional_feed_forward
 - 2 trainable modules: `MLP_1(patch_size -> patch_size)`, `MLP_2(c -> c)`
+
+
+### *Swin Transformer: Hierarchical Vision Transformer using Shifted Windows*
+
+- 要解决的问题：high resolution image, too many patches, thus very long sequence length for transformer
+- 解决方式：我觉得就是个缝合怪，这里面所有的要素之前都有类似想法
+    + hierarchical: 
+        * attention scrore 只看附近的。 Masked/sparse attention
+        * 逐层merge扩大感受野，类似于CNN。 merged patch 使得sequence_length变短，所以channels每次要翻倍
+        * 相邻patch之间没有信息传递怎么办？shifted window
+    + todo: 工程实现 efficient self-attention in shifted window partitioning
+
