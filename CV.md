@@ -67,3 +67,8 @@ note:
         * 相邻patch之间没有信息传递怎么办？shifted window
     + todo: 工程实现 efficient self-attention in shifted window partitioning
 
+
+### [PoolFormer/MetaFormer] *MetaFormer is Actually What You Need for Vision*
+
+token-mixer是什么不重要，重要的transformer这个结构：`TokenMixer -> (add and norm) -> ChannelMLP -> (add and norm)`
+`Tokenmixer`可以是 `Attention`, `SptialMLP`, even `Pooling`
