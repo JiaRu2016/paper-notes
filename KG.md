@@ -40,3 +40,16 @@ $$
 $$
 
 so $A \in R^{N, F}$ is entity embedding, $R_k \in R^{F,F}$ (flatten) is relation k embedding
+
+
+###  Emebedding entites and relations for learning and inference in knowledge basees
+
+general framework of KG embedding:
+```
+S = ScoreFunction(Emb(e1), Emb(e2), Emb(r))
+loss = max(Spos - Sneg + 1, 0)  # eg. Margin Ranked Loss
+```
+
+1. compare different score functions, two basic component Linear and Bilinear.
+(Bilinear is weighted FM, Bilinear-diag ie. DistMult)
+2. mine logical rules. TODO
