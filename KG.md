@@ -1,5 +1,19 @@
 # Knowledge Graph
 
+Summary:
+- task: learn representation of entities and relations, eval by link prediction task
+- data: 
+    + triple (s, r, o) ie. (subject, relation, object) or (h, r, t) ie. (head, relation, tail)
+    + train, valid, test sample form *one big graph*
+- model && train medthod:
+    + Embedding layer of entity and relation
+    + score funciton: 不同论文的创新点主要集中在这里, DistMult这篇文章中有对比
+    + contrast learning, sample corrupt triplet as negative smaple, usually margin ranked loss
+- eval metirc
+    + MRR mean reciprocal rank: mean(1/rank)
+    + hit@{1,3,10}: like top-k accuracy
+
+
 ### Conv2D KG embedding
 
 https://arxiv.org/abs/1707.01476
