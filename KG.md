@@ -53,3 +53,14 @@ loss = max(Spos - Sneg + 1, 0)  # eg. Margin Ranked Loss
 1. compare different score functions, two basic component Linear and Bilinear.
 (Bilinear is weighted FM, Bilinear-diag ie. DistMult)
 2. mine logical rules. TODO
+
+
+### TransE: Add
+
+head + relation(label) should be similar to tail
+
+$$
+[\gamma + d(h + l, t) - d(h^\prime + l, t^\prime)]_+
+$$
+
+
