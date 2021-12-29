@@ -63,4 +63,24 @@ $$
 [\gamma + d(h + l, t) - d(h^\prime + l, t^\prime)]_+
 $$
 
+### ComplEX
 
+$$
+P(Y_{so} == 1) = \sigma(X_{so})
+$$
+where $Y_{so}$ is paritally observed.
+
+SVD: $X = UV^T$, where $U$ and $V$ is embedding of entites as subject and object. **We need a joint embedding of subject and object**
+
+if $X$ is symetric, exist decomosition $EWE^T$. But X is not. So consider complex number:
+
+$$
+X = Re(E W \bar E^T)
+$$
+
+since Y is partially observed, to enable the model to be learnable, ie. generalized to unobserved links, need some regularity: since y is binary, we impose $E W \bar E^T$ has low *sign rank* K (K is hparam).
+
+definition of sign rank: min rank of a real matrix whose sign == Y
+$$
+rank_\pm(Y) = \min_A \{rank(A) | sign(A) == Y\}
+$$
