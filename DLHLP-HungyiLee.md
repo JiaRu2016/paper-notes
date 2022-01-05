@@ -51,6 +51,10 @@ waveform -(DFT)-> spectgram -> FilterBank -> log -> MFCC
 - log filter bank outputs `D=80`
 - MFCC, `D=39`
 
+#### eval metric
+
+- LAS: WER word error rate: = (S + I + D) / N
+- CTC: LER label error rate: edit distance ED(p, q) = number of insertion, substitution, and deletion requied to change p to q
 
 #### model: LAS, typical seq2seq with attention
 
