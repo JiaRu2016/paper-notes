@@ -51,3 +51,34 @@ waveform -(DFT)-> spectgram -> FilterBank -> log -> MFCC
 - log filter bank outputs `D=80`
 - MFCC, `D=39`
 
+
+#### model: LAS, typical seq2seq with attention
+
+*Listen, Attend, and Spell (LAS)*
+
+$$
+\bold h = Listen(\bold x) \\
+y_t = AttendAndSpell(\bold h, y_{<t}) \\
+$$
+
+Listen: RNN (possiblely with pooling or down-sampling) or TransformerEncoder. pyrimid-BLSTM
+
+AttendAndSpell: 
+$$
+s_t = RNN(s_{t-1}, c_{t-1}, y_{t-1}) \\
+c_t = AttentionContext(\bold h, s_t) \\
+y_t = f(c_t, s_t)
+$$
+
+Beam search. hyperparam beam_width B, prune the V ary tree to make number of leaf always B.
+
+Teacher Forcing: 如果用 $\hat y_{t-1}$ 当做RNN输入，那实际上在t>1位置上给了RNN非常多错误的训练样本。 应该用 ground truth $y_{t-1}$
+
+关于Attention的讨论：Translation任务确实需要attention, 因为src和target位置对应关系不一定是顺序的，src最后一个单词可能对应target第一个单词；而语音识别任务则不是，位置对应关系应该是顺序的，所以有 location-aware attention
+
+Language Model rescoring (over top 32 beam)
+$$
+s(\bold y|\bold x) = 
+    \frac{\log P(\bold y|\bold x)}{|\bold y|_c} + 
+    \lambda \log P_{LM}(\bold y|\bold x)
+$$
