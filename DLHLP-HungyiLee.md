@@ -2,7 +2,7 @@
 [youtebe](https://www.youtube.com/channel/UC2ggjtuuWvxrHHHiaDH1dlQ) 
 slides under each video
 
-### Introduction
+## Introduction
 
 六种任务
 
@@ -21,9 +21,9 @@ slides under each video
 ”硬train一发“的问题：label非常昂贵或不可得
 
 
-### Speech Recognization (ASR)
+## Speech Recognization (ASR)
 
-#### input output
+### input output
 
 input: audio `(T_audio, D)`
 output: sequence of tokens `(T_token, )`, token vocab size = `V`
@@ -51,18 +51,18 @@ waveform -(DFT)-> spectgram -> FilterBank -> log -> MFCC
 - log filter bank outputs `D=80`
 - MFCC, `D=39`
 
-#### eval metric
+### eval metric
 
 - LAS: WER word error rate: = (S + I + D) / N
 - CTC: LER label error rate: edit distance ED(p, q) = number of insertion, substitution, and deletion requied to change p to q
 
-#### model: LAS, typical seq2seq with attention
+### LAS: typical seq2seq with attention
 
 *Listen, Attend, and Spell (LAS)*
 
 $$
-\bold h = Listen(\bold x) \\
-y_t = AttendAndSpell(\bold h, y_{<t}) \\
+h = Listen( x) \\
+y_t = AttendAndSpell(h, y_{<t}) \\
 $$
 
 Listen: RNN (possiblely with pooling or down-sampling) or TransformerEncoder. pyrimid-BLSTM
@@ -70,7 +70,7 @@ Listen: RNN (possiblely with pooling or down-sampling) or TransformerEncoder. py
 AttendAndSpell: 
 $$
 s_t = RNN(s_{t-1}, c_{t-1}, y_{t-1}) \\
-c_t = AttentionContext(\bold h, s_t) \\
+c_t = AttentionContext(h, s_t) \\
 y_t = f(c_t, s_t)
 $$
 
@@ -81,14 +81,15 @@ Teacher Forcing: 如果用 $\hat y_{t-1}$ 当做RNN输入，那实际上在t>1�
 关于Attention的讨论：Translation任务确实需要attention, 因为src和target位置对应关系不一定是顺序的，src最后一个单词可能对应target第一个单词；而语音识别任务则不是，位置对应关系应该是顺序的，所以有 location-aware attention
 
 Language Model rescoring (over top 32 beam)
+
 $$
-s(\bold y|\bold x) = 
-    \frac{\log P(\bold y|\bold x)}{|\bold y|_c} + 
-    \lambda \log P_{LM}(\bold y|\bold x)
+s(y|x) = 
+    \frac{\log P(y|x)}{|y|_c} + 
+    \lambda \log P_{LM}(y|x)
 $$
 
 
-#### model: CTC, all possible allignment as "smoothed" target
+### CTC: all possible allignment as "smoothed" target
 
 我的理解： Solving the problem of inconsistant `T` by introducing "blank" token and make all possiable alligenment as kind of "smoothed" or "mixed" target which kept order of ground truth target while allow absolute positions of char to vary.
 
