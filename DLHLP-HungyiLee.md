@@ -122,3 +122,39 @@ math:
     - score of a path is prod of each token prob
 * eaquivalent to minimize sum negative log prob
 
+
+## Voice Conversion
+
+1. feature disentangle: Content Encoder, Speaker Encoder and Decoder.
+2. Directly transform: GAN
+
+### feature disentangle
+
+Content/Speaker Encoder and Decoder.
+
+how to train content Encoder? 
+- pretrained ASR
+- Advserial training Discriminator of speaker
+
+how to train Speaker Encoder? classification of speaker
+
+train Decoder: reconstruct loss
+
+### Directly transform: CycleGAN and StarGAN
+
+- (Conditional)Generator input voice and speaker label, oupput voice
+    + "Cycle": i -> j -> i reconstruct loss
+- Discriminator inpout voice and speaker label, ouput is fake or real (ie. is the voice belongs to the speaker)
+
+my impl (TO VERIFY)
+```python
+with G.training() and D.freezed():
+    v1 = G(v0, speaker_i)
+    v2 = G(v1, spreaker_j)
+    reconstruct_loss(v2, v0)
+    bce_loss(D(v1, spreaker_i), TRUE).backward()
+
+with D.training() and G.freezed():
+    bce_loss(D(v1, spreaker_i), FALSE).backward()
+```
+
