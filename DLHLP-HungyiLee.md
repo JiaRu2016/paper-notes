@@ -148,13 +148,14 @@ train Decoder: reconstruct loss
 
 my impl (TO VERIFY)
 ```python
+v1 = G(v0, speaker_i)
+v2 = G(v1, spreaker_j)
+
 with G.training() and D.freezed():
-    v1 = G(v0, speaker_i)
-    v2 = G(v1, spreaker_j)
-    reconstruct_loss(v2, v0)
-    bce_loss(D(v1, spreaker_i), TRUE).backward()
+    reconstruct_loss(v2, v0).backward()
+    bce_loss(D(v1, spreaker_i), ONE).backward()
 
 with D.training() and G.freezed():
-    bce_loss(D(v1, spreaker_i), FALSE).backward()
+    bce_loss(D(v1, spreaker_i), ZERO).backward()
 ```
 
