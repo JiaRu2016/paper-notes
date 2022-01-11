@@ -159,3 +159,111 @@ with D.training() and G.freezed():
     bce_loss(D(v1, spreaker_i), ZERO).backward()
 ```
 
+
+## Extraction-based QA 
+
+### SQuAD dataset
+
+use torchtext to download
+
+torchtext dataset yielding batch:
+```python
+ds_train, ds_dev = torchtext.datasets.SQuAD2(
+    root='/home/rjia/playground/datasets_torch', 
+    split=('train', 'dev')
+)
+# len(ds_train) / 1e4   # 13w
+
+for batch in ds_train:
+    doc, q, a, start = batch
+    break
+
+print(doc, '--------', q , a, start, sep='\n')
+```
+```
+Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record prod ... singles "Crazy in Love" and "Baby Boy".
+--------
+When did Beyonce start becoming popular?
+['in the late 1990s']
+[269]
+```
+
+raw data struct:
+
+```python
+with open('/home/rjia/playground/datasets_torch/SQuAD2/train-v2.0.json', 'r') as f:
+    d = json.load(f)
+
+# json file -> dict d
+# d['data'][0]
+{
+    'title': str,    # one document
+    'paragraphs': [
+        # many paragraphs, 
+        {
+            'context': str,  # very long
+            'qas': [
+                # each paragraph with many question
+                {
+                    'question': str, 
+                    'id': str, 
+                    'answers': [{'text': str, 'start': int}],  # each question with many answers
+                    'is_impossible': bool
+                },
+                # ...
+            ]
+        },
+        # ...
+    ]
+}
+```
+
+### eval metrics: F1 and EM(exact match)
+
+- 所有answers取最大的那个
+- F1 score: 将单词打碎，当做词袋模型，计算 precision and recall。 F1 = 调和平均数(precision, recall)
+- EM: 精确匹配 1.0 or 0.0
+
+
+### Model: Attention(Query, Context) and Context self-Attention
+
+[](./fig/ExtactionQA_qcAttn.jpeg)
+
+Before BERT: 
+
+```python
+# (dim for one sample)
+# document: (T_doc, d)
+# question: (T_qs, d)
+
+# Query-to-Context attention --------------
+query_summary = QuestionEncoder(question)  # (D,)
+extracted = Attntion(
+    q=query_summary, 
+    k=Kproj(document), 
+    v=Vporj(document)
+)  # (D, )
+answer = AnswerModule(extracted) # classifiction scaler or tuple (start, end)
+
+# Context-to-Query attention --------------
+for doc_t in document:   # loop dim=T
+    extracted_t = Attntion(q=Qproj(doc_t), k_and_v=QuestionEncoder(question)) # (D,)
+    doc_merge_query_t = MergeModule(extracted_t, doc_t)  # (D,)
+
+doc_merge_query = Concat(doc_merge_query_t, dim=t)  # (T_doc, D)
+answer = AnswerModule(doc_merge_query)
+
+# BiDAF: Bi-Directional Attention Flow
+# self-attention over document, stacking over Context-Query Attention Flow
+Attention(q_k_v=doc_merge_query or document)
+```
+
+BERT: 全都要
+
+```python
+Attention([document, '[SEP]', query])
+```
+
+### Engineering chanlenge: too long documnet
+
+TODO
