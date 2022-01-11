@@ -227,7 +227,7 @@ with open('/home/rjia/playground/datasets_torch/SQuAD2/train-v2.0.json', 'r') as
 
 ### Model: Attention(Query, Context) and Context self-Attention
 
-[](./fig/ExtactionQA_qcAttn.jpeg)
+![](./fig/ExtactionQA_qcAttn.jpeg)
 
 Before BERT: 
 
