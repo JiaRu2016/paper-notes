@@ -14,6 +14,8 @@ CyclicalLR *Cyclical Learning Rates for Training Neural Networks*
 
 *CurriculumLearning* 2009_ICML
 
+more [training.md](./training.md)
+
 
 ## distributed DL
 
