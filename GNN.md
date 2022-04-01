@@ -86,9 +86,9 @@ decoder = InnerProduct_Decoder()
 reconstruct_loss = BCELoss()
 kl_loss = lambda mu, sigma: 1 + 2 * log(sigma) - sigm**2 - mu**2
 
-def reparametrize(mu, logstd):
+def reparametrize(mu, std):
     if training:
-        return mu + torch.randn_like(logstd) * torch.exp(logstd)
+        return mu + std * torch.randn_like(std)
     else:
         return mu
 
